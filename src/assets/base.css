@@ -1,0 +1,26 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #191919;
+    font-family: "SF Pro Regular";
+    color: #A1A1AA;
+}
+
+@font-face {
+    font-family: "SF Pro Regular";
+    src: url('@/assets/fonts/sf-pro-text-regular.otf');
+}
+
+@font-face {
+    font-family: "SF Pro Medium";
+    src: url('@/assets/fonts/sf-pro-text-medium.otf');
+}
+
+@font-face {
+    font-family: "SF Pro SemiBold";
+    src: url('@/assets/fonts/sf-pro-text-semibold.otf');
+}
