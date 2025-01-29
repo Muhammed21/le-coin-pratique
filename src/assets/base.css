@@ -1,14 +1,42 @@
+:root {
+    --background-color: #191919;
+    --block-background: #27272a;
+    --markdown-background: #2f2f32;
+    --white: white;
+    --white-05: rgba(255, 255, 255, 0.05);
+    --white-06: rgba(255, 255, 255, 0.06);
+    --white-10: rgba(255, 255, 255, 0.1);
+    --white-50: rgba(255, 255, 255, 0.5);
+    --text-f4: #f4f4f5;
+    --text-a1:#a1a1aa;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    background-color: #191919;
-    font-family: "SF Pro Regular";
-    color: #A1A1AA;
+/* Personnalisation de la scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
 }
+
+::-webkit-scrollbar-track {
+    background-color:var(--markdown-background);
+    padding: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--background-color); 
+    transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+    cursor: pointer;
+}
+
 
 @font-face {
     font-family: "SF Pro Regular";

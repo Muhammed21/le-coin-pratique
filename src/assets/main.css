@@ -1,1 +1,58 @@
 @import './base.css';
+
+
+body {
+    background-color: var(--background-color);
+    font-family: "SF Pro Regular";
+    color: var(--text-a1);
+    display: grid;
+    place-content: center;
+    height: 100vh;
+}
+
+.remove-button {
+    opacity: 0;
+    transition: all 200ms ease-in-out;
+    position: absolute;
+    display: grid;
+    place-content: center;
+    top: 0px;
+    left: -40px;
+    width: 25px;
+    height: 25px;
+    background-color: var(--block-background);
+    color: var(--white);
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .remove-button:hover {
+    background-color: #3f3f44;
+  }
+
+  .rect_hover {
+    opacity: 0;
+    transition: all 200ms ease-in-out;
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    z-index: 0;
+    height: calc(100% + 10px);
+    border-radius: 15px;
+    background-color: #27272aa2;
+  }
+
+  .rect_hover_link {
+    opacity: 0;
+    transition: all 200ms ease-in-out;
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    z-index: -5;
+    height: calc(100% + 10px);
+    border-radius: 10px;
+    background-color: #27272aa2;
+  }
