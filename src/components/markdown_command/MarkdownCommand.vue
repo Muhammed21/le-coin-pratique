@@ -9,9 +9,9 @@
       />
     </div>
 
-    <CommandMenu :showCommandMenu="showCommandMenu" @executeCommand="executeCommand" />
+    <CommandMenu :showCommandMenu="showCommandMenu" @executeCommand="executeCommand"/>
 
-    <div v-if="!containsCodeBlock && !containsExternalLinkBlock">
+    <div v-if="!containsCodeBlock && !containsExternalLinkBlock && !containsMarkdown">
       <input
         v-model="input"
         @keyup.enter="handleInputChange"
@@ -19,109 +19,117 @@
         placeholder="Écrivez quelque chose ou tapez '/' pour les commandes"
       />
     </div>
+    <div class="compiledmarkdown_container" v-if="containsMarkdown && !containsCodeBlock && !containsExternalLinkBlock">
+      <div class="edit-button" @click="handleRemoveMarkdown">
+        <img src="../../assets/svg/input.svg" style="width: 16px; height: 16px;" />
+      </div>
+      <div v-html="compiledMarkdown" class="markdown-output"></div>
+    </div>
 
     <div v-if="containsExternalLinkBlock">
-      <LinkBlock @removeLink="removeLink" />
+      <LinkBlock @removeLink="removeLink"/>
     </div>
   </div>
 </template>
 
-<script>
-import { marked } from 'marked'
-import SnippetBlock from './Snippet/SnippetBlock.vue'
-import LinkBlock from './Link/LinkBlock.vue'
-import { useInputStore } from '@/stores/useInputStore'
-import CommandMenu from '../markdown_command/utils/CommandContext.vue'
+<script setup lang="ts">
+import {ref, computed} from 'vue';
+import {marked} from 'marked';
+import SnippetBlock from './Snippet/SnippetBlock.vue';
+import LinkBlock from './Link/LinkBlock.vue';
+import {useInputStore} from '@/stores/useInputStore';
+import CommandMenu from '../markdown_command/utils/CommandContext.vue';
 
-export default {
-  components: {
-    SnippetBlock,
-    LinkBlock,
-    CommandMenu,
-  },
-  props: {
-    codeBlock: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  data() {
-    return {
-      input: '',
-      containsCodeBlock: false,
-      containsExternalLinkBlock: false,
-      editableCode: '$ npm install --save stripe @stripe/stripe-js next',
-      markdownIsActive: false,
-      showCommandMenu: false,
-    }
-  },
-  computed: {
-    compiledMarkdown() {
-      return marked(this.input)
-    },
-  },
-  methods: {
-    checkForCodeBlock() {
-      const codeBlockRegex = /\/code/g
-      this.containsCodeBlock = codeBlockRegex.test(this.input)
-    },
-    checkForLinkBlock() {
-      const linkBlockRegex = /\/link/g
-      this.containsExternalLinkBlock = linkBlockRegex.test(this.input)
-    },
-    handleInputChange() {
-      this.checkForCodeBlock()
-      this.checkForLinkBlock()
-    },
-    SaveInStore() {
-      const inputStore = useInputStore() // Crée une instance du store
-      inputStore.setInputValue(this.input)
-      console.log(inputStore)
-    },
-    handleKeyUp(event) {
-      if (event.key === '/') {
-        this.showCommandMenu = true
-      }
-      if (event.key === 'Enter') {
-        this.showCommandMenu = false
-      }
-      if (event.key === 'Backspace') {
-        this.showCommandMenu = false
-      }
-      if (event.key === 'Escape') {
-        this.showCommandMenu = false
-      }
-      this.SaveInStore()
-    },
-    executeCommand(command) {
-      if (command === 'code') {
-        this.input += '/code'
-        this.containsCodeBlock = true
-      } else if (command === 'link') {
-        this.input += '/link'
-        this.containsExternalLinkBlock = true
-      }
-      this.showCommandMenu = false
-    },
-    removeSnippet() {
-      this.containsCodeBlock = false
-      this.input = ''
-    },
-    removeLink() {
-      this.containsExternalLinkBlock = false
-      this.input = ''
-    },
-    toggleMarkdownActive(status) {
-      this.markdownIsActive = status
-    },
-  },
+const input = ref('');
+const containsCodeBlock = ref(false);
+const containsExternalLinkBlock = ref(false);
+const editableCode = ref('$ npm install --save stripe @stripe/stripe-js next');
+const markdownIsActive = ref(false);
+const containsMarkdown = ref(false);
+const showCommandMenu = ref(false);
+
+const compiledMarkdown = computed(() => marked(input.value));
+
+const checkForCodeBlock = () => {
+  const codeBlockRegex = /\/code/g;
+  containsCodeBlock.value = codeBlockRegex.test(input.value);
+};
+
+const checkMarkdownActive = () => {
+  const markdownRegex = /[#*-`~]/g;
+  containsMarkdown.value = markdownRegex.test(input.value);
+};
+
+const checkForLinkBlock = () => {
+  const linkBlockRegex = /\/link/g;
+  containsExternalLinkBlock.value = linkBlockRegex.test(input.value);
+};
+
+const handleInputChange = () => {
+  checkForCodeBlock();
+  checkForLinkBlock();
+  checkMarkdownActive()
+};
+
+const handleRemoveMarkdown = () => {
+  containsMarkdown.value = false;
 }
+
+const SaveInStore = () => {
+  const inputStore = useInputStore();
+  inputStore.setInputValue(input.value);
+};
+
+const handleKeyUp = (event: KeyboardEvent) => {
+  if (event.key === '/') {
+    showCommandMenu.value = true;
+  }
+  if (['Enter', 'Backspace', 'Escape'].includes(event.key)) {
+    showCommandMenu.value = false;
+  }
+  SaveInStore();
+};
+
+const executeCommand = (command: string) => {
+  if (command === 'code') {
+    input.value += '/code';
+    containsCodeBlock.value = true;
+  }
+  if (command === 'link') {
+    input.value += '/link';
+    containsExternalLinkBlock.value = true;
+  }
+  if (command === 'H1') {
+    input.value = '# H1';
+    containsMarkdown.value = true;
+  }
+  if (command === 'H2') {
+    input.value = '## H2';
+    containsMarkdown.value = true;
+  }
+  if (command === 'H3') {
+    input.value = '### H3';
+    containsMarkdown.value = true;
+  }
+  showCommandMenu.value = false;
+};
+
+const removeSnippet = () => {
+  containsCodeBlock.value = false;
+  input.value = '';
+};
+
+const removeLink = () => {
+  containsExternalLinkBlock.value = false;
+  input.value = '';
+};
 </script>
 
 <style scoped>
 input {
   background-color: var(--background-color);
-  padding: 3px;
+  padding: 6px 10px;
+  transition: all 150ms ease-in-out;
   resize: none;
   color: var(--text-a1);
   border: none;
@@ -130,8 +138,54 @@ input {
   width: 640px;
   height: max-content;
 }
+
 input:focus {
   outline: none;
+}
+
+input:hover, .compiledmarkdown_container:hover {
+  background-color: #27272aa2;
+  border-radius: 8px;
+  transition: all 150ms ease-in-out;
+  cursor: text;
+}
+
+.compiledmarkdown_container {
+  display: flex;
+  position: relative;
+}
+
+.markdown-output {
+  padding: 6px 10px;
+  transition: all 150ms ease-in-out;
+  width: 640px;
+  color: var(--white);
+}
+
+.edit-button {
+  opacity: 0;
+  transition: all 200ms ease-in-out;
+  position: absolute;
+  display: grid;
+  place-content: center;
+  top: 5px;
+  left: -40px;
+  width: 25px;
+  height: 25px;
+  background-color: var(--block-background);
+  color: var(--white);
+  padding: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.edit-button:hover {
+  background-color: #3f3f44;
+}
+
+.compiledmarkdown_container:hover .edit-button {
+  opacity: 1;
+  transition: all 200ms ease-in-out;
 }
 
 #editor {

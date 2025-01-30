@@ -2,6 +2,15 @@
   <div v-if="showCommandMenu" class="command-menu">
     <span>Command menu</span>
     <ul>
+      <li @click="executeCommand('H1')">
+        <img src="../../../assets/svg/H1.svg" style="width: 20px;height: 20px;"/>Heading 1
+      </li>
+      <li @click="executeCommand('H2')">
+        <img src="../../../assets/svg/H2.svg" style="width: 20px;height: 20px;"/>Heading 2
+      </li>
+      <li @click="executeCommand('H3')">
+        <img src="../../../assets/svg/H3.svg" style="width: 20px;height: 20px;"/>Heading 3
+      </li>
       <li @click="executeCommand('code')"><img src="../../../assets/svg/code.svg" />Snippet</li>
       <li @click="executeCommand('link')">
         <img src="../../../assets/svg/link.svg" />Lien Externe
@@ -29,8 +38,8 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  bottom: 40px;
-  left: 10px;
+  top: 0;
+  left: -210px;
   background-color: var(--block-background);
   border: 1px solid var(--white-10);
   border-radius: 5px;

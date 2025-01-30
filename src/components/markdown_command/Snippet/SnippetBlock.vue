@@ -9,12 +9,11 @@
       <p>Snippet</p>
       <textarea
         @input="updateEditableCode"
-        @keyup="saveInLocalStorage($event)"
+        @keyup="saveSnippet"
         class="markdown-render"
-        :value="Verification()"
+        :value="snippetContent"
         :placeholder="editableCode"
       ></textarea>
-      <!-- Bouton pour supprimer -->
       <div class="remove-button" @click="handleRemoveSnippet">
         <img src="../../../assets/svg/corbeille.svg" />
       </div>
@@ -22,58 +21,40 @@
   </div>
 </template>
 
-<script>
-import { useRemoveBtn } from '@/stores/removeItem'
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useSnippetStore } from '../../../stores/snippet/localStorageLogique.ts';
 
-export default {
-  props: {
-    editableCode: {
-      type: String,
-      required: true,
-    },
-    markdownIsActive: {
-      type: Boolean,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      snippetId: Date.now().toString(), // ID unique pour chaque snippet
-    }
-  },
-  methods: {
-    toggleMarkdownActive(status) {
-      this.$emit('toggleMarkdownActive', status)
-    },
-    handleRemoveSnippet() {
-      const removeBtnStore = useRemoveBtn()
-      this.$emit('removeSnippet')
+defineProps<{ editableCode: string; markdownIsActive: boolean }>();
+const emit = defineEmits(['toggleMarkdownActive', 'removeSnippet', 'update:editableCode']);
 
-      removeBtnStore.isRemoved = true
-      console.log(removeBtnStore.isRemoved)
-      if (removeBtnStore.isRemoved) {
-        localStorage.removeItem(`snippet_${this.snippetId}`)
-        removeBtnStore.isRemoved = false
-        console.log(removeBtnStore.isRemoved)
-      }
-    },
-    updateEditableCode(event) {
-      this.$emit('update:editableCode', event.target.value)
-    },
-    saveInLocalStorage(event) {
-      const snippet = {
-        id: this.snippetId,
-        content: event.target.value,
-      }
-      localStorage.setItem(`snippet_${this.snippetId}`, JSON.stringify(snippet))
-    },
-    Verification() {
-      const storedSnippet = localStorage.getItem(`snippet_${this.snippetId}`)
-      const snippet = storedSnippet ? JSON.parse(storedSnippet) : null
-      return snippet ? snippet.content : ''
-    },
-  },
-}
+const snippetStore = useSnippetStore();
+const snippetId = ref<string>(Date.now().toString());
+
+const snippetContent = computed(() => snippetStore.getSnippet(snippetId.value));
+
+const toggleMarkdownActive = (status: boolean) => {
+  emit('toggleMarkdownActive', status);
+};
+
+const handleRemoveSnippet = () => {
+  snippetStore.removeSnippet(snippetId.value);
+  emit('removeSnippet');
+};
+
+const updateEditableCode = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement;
+  emit('update:editableCode', target.value);
+};
+
+const saveSnippet = (event: Event) => {
+  const target = event.target as HTMLTextAreaElement;
+  snippetStore.saveSnippet(snippetId.value, target.value);
+};
+
+onMounted(() => {
+  snippetContent.value;
+});
 </script>
 
 <style scoped>
