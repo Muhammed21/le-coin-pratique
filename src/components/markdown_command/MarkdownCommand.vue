@@ -39,6 +39,12 @@ export default {
     LinkBlock,
     CommandMenu,
   },
+  props: {
+    codeBlock: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       input: '',
