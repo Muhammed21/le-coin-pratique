@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
 :root {
     --background-color: #191919;
     --block-background: #27272a;
@@ -5,6 +7,7 @@
     --white: white;
     --white-05: rgba(255, 255, 255, 0.05);
     --white-06: rgba(255, 255, 255, 0.06);
+    --white-08: rgba(255, 255, 255, 0.08);
     --white-10: rgba(255, 255, 255, 0.1);
     --white-50: rgba(255, 255, 255, 0.5);
     --text-f4: #f4f4f5;

@@ -42,7 +42,7 @@ export default {
   position: relative;
   cursor: pointer;
   display: flex;
-  width: 640px;
+  width: clamp(300px, 33.3vw, 640px);
   height: max-content;
   align-items: center;
   justify-content: space-between;

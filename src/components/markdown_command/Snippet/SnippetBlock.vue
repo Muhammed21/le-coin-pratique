@@ -22,39 +22,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useSnippetStore } from '../../../stores/snippet/localStorageLogique.ts';
+import { ref, computed, onMounted } from 'vue'
+import { useSnippetStore } from '../../../stores/snippet/localStorageLogique.ts'
 
-defineProps<{ editableCode: string; markdownIsActive: boolean }>();
-const emit = defineEmits(['toggleMarkdownActive', 'removeSnippet', 'update:editableCode']);
+defineProps<{ editableCode: string; markdownIsActive: boolean }>()
+const emit = defineEmits(['toggleMarkdownActive', 'removeSnippet', 'update:editableCode'])
 
-const snippetStore = useSnippetStore();
-const snippetId = ref<string>(Date.now().toString());
+const snippetStore = useSnippetStore()
+const snippetId = ref<string>(Date.now().toString())
 
-const snippetContent = computed(() => snippetStore.getSnippet(snippetId.value));
+const snippetContent = computed(() => snippetStore.getSnippet(snippetId.value))
 
 const toggleMarkdownActive = (status: boolean) => {
-  emit('toggleMarkdownActive', status);
-};
+  emit('toggleMarkdownActive', status)
+}
 
 const handleRemoveSnippet = () => {
-  snippetStore.removeSnippet(snippetId.value);
-  emit('removeSnippet');
-};
+  snippetStore.removeSnippet(snippetId.value)
+  emit('removeSnippet')
+}
 
 const updateEditableCode = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  emit('update:editableCode', target.value);
-};
+  const target = event.target as HTMLTextAreaElement
+  emit('update:editableCode', target.value)
+}
 
 const saveSnippet = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  snippetStore.saveSnippet(snippetId.value, target.value);
-};
+  const target = event.target as HTMLTextAreaElement
+  snippetStore.saveSnippet(snippetId.value, target.value)
+}
 
 onMounted(() => {
-  snippetContent.value;
-});
+  snippetContent.value
+})
 </script>
 
 <style scoped>
@@ -85,7 +85,7 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 640px;
+  width: clamp(300px, 33.3vw, 640px);
   height: max-content;
   padding: 10px;
   background-color: var(--block-background);

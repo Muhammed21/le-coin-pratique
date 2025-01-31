@@ -2,14 +2,16 @@
 import { ref, onMounted } from 'vue'
 import MarkdownCommand from '../components/markdown_command/MarkdownCommand.vue'
 import { useInputStore } from '@/stores/useInputStore'
+import { getItem } from '@/stores/block_creator/getItem'
 
 const markdownCommands = ref<any[]>([])
 const activeMarkdown = ref<any[]>([])
+const lastActiveId = ref<number[]>([])
 
 const inputStore = useInputStore()
 
-const addMarkdownCommand = () => {
-  const newCommand = { id: Date.now(), content: '' }
+const addMarkdownCommand = (content: string = '', id: number | null = null) => {
+  const newCommand = { id: id ?? Date.now(), content }
   markdownCommands.value.push(newCommand)
   console.log('MarkdownCommand ajouté avec id:', newCommand.id)
 }
@@ -19,7 +21,7 @@ const saveInLocalStorage = (commandId: number) => {
   if (command) {
     const updatedCommand = {
       id: command.id,
-      content: inputStore.inputValue, // La valeur actuelle de l'input est stockée
+      content: inputStore.inputValue,
     }
     console.log(updatedCommand)
     localStorage.setItem(`command_${command.id}`, JSON.stringify(updatedCommand))
@@ -37,7 +39,6 @@ const handleKeydown = (event: KeyboardEvent) => {
     addMarkdownCommand()
   }
 
-  // Sauvegarde au moment où l'input change
   saveInLocalStorageForActive()
 
   if (
@@ -46,14 +47,13 @@ const handleKeydown = (event: KeyboardEvent) => {
     inputStore.inputValue.length < 1
   ) {
     if (activeMarkdown.value.length > 0) {
-      const lastActiveId = activeMarkdown.value[activeMarkdown.value.length - 1]
-      deleteMarkdownCommand(lastActiveId)
-      activeMarkdown.value.pop()
+      const lastActive = activeMarkdown.value.pop()
+      deleteMarkdownCommand(lastActive)
+      lastActiveId.value.push(lastActive)
     }
   }
 }
 
-// Fonction pour sauvegarder la commande active
 const saveInLocalStorageForActive = () => {
   if (activeMarkdown.value.length > 0) {
     const activeId = activeMarkdown.value[activeMarkdown.value.length - 1]
@@ -62,11 +62,13 @@ const saveInLocalStorageForActive = () => {
 }
 
 onMounted(() => {
-  const snippets = Object.keys(localStorage)
-    .filter((key) => key.startsWith('command_')) // Assure-toi d'utiliser la bonne clé
-    .map((key) => JSON.parse(localStorage.getItem(key)!))
+  const { commandInLocalStorage } = getItem()
 
-  console.log(snippets)
+  commandInLocalStorage.forEach((elem: any) => {
+    addMarkdownCommand(elem.content, elem.id)
+    lastActiveId.value.push(elem.id)
+    console.log(elem.content)
+  })
 
   addMarkdownCommand()
 })
@@ -80,7 +82,7 @@ onMounted(() => {
       @click="activeMarkdown.push(command.id)"
       @input="inputStore.inputValue = command.content"
     >
-      <MarkdownCommand />
+      <MarkdownCommand :input="command.content" />
     </div>
   </main>
 </template>
