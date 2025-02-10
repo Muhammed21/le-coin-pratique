@@ -49,6 +49,22 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+@media screen and (max-width: 720px) {
+  .command-menu {
+    left: 0px;
+    top: 40px;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .command-menu {
+    left: 0px;
+    top: 70px;
+    width: 100%;
+  }
+}
+
 .command-menu span {
   padding: 5px 0 0 5px;
   font-size: 12px;

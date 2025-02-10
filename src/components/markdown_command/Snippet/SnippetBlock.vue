@@ -85,13 +85,19 @@ textarea:focus {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: clamp(300px, 33.3vw, 640px);
+  width: 640px;
   height: max-content;
   padding: 10px;
   background-color: var(--block-background);
   border: 1px solid var(--white-06);
   border-radius: 10px;
   position: relative;
+}
+
+@media screen and (max-width: 720px) {
+  .snippet_block {
+    width: 100%;
+  }
 }
 
 .snippet_block p {

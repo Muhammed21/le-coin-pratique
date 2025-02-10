@@ -90,7 +90,14 @@ onMounted(() => {
 <style scoped>
 .markdown_container {
   display: flex;
+  width: clamp(300px, 33.3vw, 640px);
   flex-direction: column;
   gap: 10px;
+}
+
+@media screen and (max-width: 720px) {
+  .markdown_container {
+    width: 100%;
+  }
 }
 </style>

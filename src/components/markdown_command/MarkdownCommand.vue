@@ -156,8 +156,14 @@ input {
   border: none;
   font-size: 16px;
   font-family: 'SF Pro Regular';
-  width: clamp(300px, 33.3vw, 640px);
+  width: 640px;
   height: max-content;
+}
+
+@media screen and (max-width: 720px) {
+  input {
+    width: 100%;
+  }
 }
 
 input:focus {
@@ -180,8 +186,14 @@ input:hover,
 .markdown-output {
   padding: 6px 10px;
   transition: all 150ms ease-in-out;
-  width: clamp(300px, 33.3vw, 640px);
+  width: 640px;
   color: var(--white);
+}
+
+@media screen and (max-width: 720px) {
+  .markdown-output {
+    width: 100%;
+  }
 }
 
 .edit-button {
@@ -212,5 +224,13 @@ input:hover,
 
 #editor {
   position: relative;
+  width: 640px;
 }
+
+@media screen and (max-width: 720px) {
+  #editor {
+    width: 100%;
+  }
+}
+
 </style>
