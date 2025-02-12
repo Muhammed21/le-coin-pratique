@@ -1,76 +1,81 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import MarkdownCommand from '../components/markdown_command/MarkdownCommand.vue'
+import Menu from '../components/menu_component/Menu.vue'
 import { useInputStore } from '@/stores/useInputStore'
-import { getItem } from '@/stores/block_creator/getItem'
 
-const markdownCommands = ref<any[]>([])
-const activeMarkdown = ref<any[]>([])
-const lastActiveId = ref<number[]>([])
-
+const markdownCommands = ref<{ id: number; content: string }[]>([]) // Tableau des commandes
+const activeMarkdown = ref<number | null>(null) // Commande active
 const inputStore = useInputStore()
+
+const saveCommandsInLocalStorage = () => {
+  localStorage.setItem('command_1', JSON.stringify(markdownCommands.value))
+  console.log('Commandes sauvegardées dans localStorage :', markdownCommands.value)
+}
+
+const loadCommandsFromLocalStorage = () => {
+  const savedCommands = localStorage.getItem('command_1')
+  if (savedCommands) {
+    markdownCommands.value = JSON.parse(savedCommands)
+    console.log('Commandes chargées depuis localStorage :', markdownCommands.value)
+  }
+}
 
 const addMarkdownCommand = (content: string = '', id: number | null = null) => {
   const newCommand = { id: id ?? Date.now(), content }
   markdownCommands.value.push(newCommand)
-  console.log('MarkdownCommand ajouté avec id:', newCommand.id)
-}
-
-const saveInLocalStorage = (commandId: number) => {
-  const command = markdownCommands.value.find((c) => c.id === commandId)
-  if (command) {
-    const updatedCommand = {
-      id: command.id,
-      content: inputStore.inputValue,
-    }
-    console.log(updatedCommand)
-    localStorage.setItem(`command_${command.id}`, JSON.stringify(updatedCommand))
-  }
+  saveCommandsInLocalStorage()
+  console.log('Nouvelle commande ajoutée :', newCommand)
 }
 
 const deleteMarkdownCommand = (id: number) => {
   markdownCommands.value = markdownCommands.value.filter((command) => command.id !== id)
-  console.log('MarkdownCommand supprimé avec id:', id)
-  localStorage.removeItem(`command_${id}`)
+  saveCommandsInLocalStorage()
+  console.log('Commande supprimée avec id :', id)
+}
+
+const updateActiveCommand = (id: number, content: string) => {
+  const command = markdownCommands.value.find((c) => c.id === id)
+  if (command) {
+    command.content = content
+    saveCommandsInLocalStorage()
+    console.log('Commande mise à jour :', command)
+  }
 }
 
 const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Enter' && inputStore.inputValue.length > 0) {
+  if (event.key === 'Enter' && inputStore.inputValue.trim().length > 0) {
     addMarkdownCommand()
+    inputStore.inputValue = ''
   }
-
-  saveInLocalStorageForActive()
 
   if (
     event.key === 'Backspace' &&
     markdownCommands.value.length > 1 &&
-    inputStore.inputValue.length < 1
+    inputStore.inputValue.trim().length === 0
   ) {
-    if (activeMarkdown.value.length > 0) {
-      const lastActive = activeMarkdown.value.pop()
-      deleteMarkdownCommand(lastActive)
-      lastActiveId.value.push(lastActive)
+    if (activeMarkdown.value !== null) {
+      deleteMarkdownCommand(activeMarkdown.value)
+      activeMarkdown.value = null // Réinitialise la commande active
     }
   }
 }
 
-const saveInLocalStorageForActive = () => {
-  if (activeMarkdown.value.length > 0) {
-    const activeId = activeMarkdown.value[activeMarkdown.value.length - 1]
-    saveInLocalStorage(activeId)
+const selectCommand = (commandId: number) => {
+  activeMarkdown.value = commandId
+  const command = markdownCommands.value.find((c) => c.id === commandId)
+  if (command) {
+    inputStore.inputValue = command.content // Charge le contenu de la commande sélectionnée
+    console.log('Commande sélectionnée :', command)
   }
 }
 
+// Chargement des commandes au montage du composant
 onMounted(() => {
-  const { commandInLocalStorage } = getItem()
-
-  commandInLocalStorage.forEach((elem: any) => {
-    addMarkdownCommand(elem.content, elem.id)
-    lastActiveId.value.push(elem.id)
-    console.log(elem.content)
-  })
-
-  addMarkdownCommand()
+  loadCommandsFromLocalStorage()
+  if (markdownCommands.value.length === 0) {
+    addMarkdownCommand() // Ajoute une commande vide si aucune n'existe
+  }
 })
 </script>
 
@@ -79,18 +84,18 @@ onMounted(() => {
     <div
       v-for="command in markdownCommands"
       :key="command.id"
-      @click="activeMarkdown.push(command.id)"
-      @input="inputStore.inputValue = command.content"
+      :class="{ active: command.id === activeMarkdown }"
+      @click="selectCommand(command.id)"
     >
-      <MarkdownCommand :input="command.content" />
+      <MarkdownCommand :input="command.content" @input="updateActiveCommand(command.id, $event.target.value)" />
     </div>
+    <Menu />
   </main>
 </template>
 
 <style scoped>
 .markdown_container {
   display: flex;
-  width: clamp(300px, 33.3vw, 640px);
   flex-direction: column;
   gap: 10px;
 }

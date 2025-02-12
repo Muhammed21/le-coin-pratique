@@ -6,14 +6,15 @@ body {
     font-family: "SF Pro Regular";
     color: var(--text-a1);
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: center;
     height: 100vh;
     width: 100%;
 }
 
 #app {
-    padding: 0 50px;
+    padding: 150px 50px;
+    width: max-content;
 }
 
 @media screen and (max-width: 720px) {
@@ -82,3 +83,19 @@ li {
     border-radius: 10px;
     background-color: #27272aa2;
   }
+
+.pages {
+    cursor: pointer;
+    background-color: var(--white-05);
+    padding: 5px 25px;
+    border-radius: 6px;
+    color: #E1E1E1;
+    font-family: "SF Pro Medium";
+    font-size: 14px;
+    width: 100%;
+    height: max-content;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: start;
+}
