@@ -3,17 +3,19 @@
     <span>Command menu</span>
     <ul>
       <li @click="executeCommand('H1')">
-        <img src="../../../assets/svg/H1.svg" style="width: 20px;height: 20px;"/>Heading 1
+        <img src="../../../assets/svg/H1.svg" style="width: 20px; height: 20px" />Heading 1
       </li>
       <li @click="executeCommand('H2')">
-        <img src="../../../assets/svg/H2.svg" style="width: 20px;height: 20px;"/>Heading 2
+        <img src="../../../assets/svg/H2.svg" style="width: 20px; height: 20px" />Heading 2
       </li>
       <li @click="executeCommand('H3')">
-        <img src="../../../assets/svg/H3.svg" style="width: 20px;height: 20px;"/>Heading 3
+        <img src="../../../assets/svg/H3.svg" style="width: 20px; height: 20px" />Heading 3
       </li>
-      <li @click="executeCommand('code')"><img src="../../../assets/svg/code.svg" />Snippet</li>
+      <li @click="executeCommand('code')">
+        <img src="../../../assets/svg/code.svg" />Snippet Block
+      </li>
       <li @click="executeCommand('link')">
-        <img src="../../../assets/svg/link.svg" />Lien Externe
+        <img src="../../../assets/svg/link.svg" />External Link
       </li>
     </ul>
   </div>

@@ -2,22 +2,24 @@
   <section class="menu_container">
     <div class="menu_primary_part">
       <div class="menu_primary_left_part">
-        <img src="../../assets/profil/profile_muhammed.svg"/>
-        <div class="selector"><span ref="profil_name">Muhammed Cavus</span> <img
-          src="../../assets/svg/bottom_arrow.svg"/></div>
+        <img src="../../assets/profil/profile_muhammed.svg" />
+        <div class="selector">
+          <span ref="profil_name">Muhammed Cavus</span>
+          <img src="../../assets/svg/bottom_arrow.svg" />
+        </div>
       </div>
-      <button>
-        <img src="../../assets/svg/sheet-paper.svg"/>
+      <button @click="local_page_maker()">
+        <img src="../../assets/svg/sheet-paper.svg" />
       </button>
     </div>
     <div class="menu_secondary_part">
-      <img src="../../assets/svg/search-icon.svg"/>
-      <input placeholder="Rechercher" autocomplete="off"/>
+      <img src="../../assets/svg/search-icon.svg" />
+      <input placeholder="Rechercher" autocomplete="off" />
     </div>
     <div class="menu_third_part">
       <span class="third_part_span">Mon coin pratique</span>
       <div class="QG_container">
-        <img src="../../assets/svg/home-icon.svg"/>
+        <img src="../../assets/svg/home-icon.svg" />
         <span class="QG_span" ref="QG_span">QG de Muhammed Cavus</span>
       </div>
     </div>
@@ -25,51 +27,67 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from "vue";
+import { ref, onMounted } from 'vue'
+import { pageSelected } from '@/stores/menu/page_selected'
 
-const profil_name = ref(null);
-const QG_span = ref(null);
+let click = 1
+
+const profil_name = ref(null)
+const QG_span = ref(null)
+
+const page_local = pageSelected()
 
 const trimSpan = () => {
   if (profil_name.value) {
-    profil_name.value.textContent = profil_name.value.textContent.slice(0, 11) + " ...";
+    profil_name.value.textContent = profil_name.value.textContent.slice(0, 11) + ' ...'
   }
   if (QG_span.value) {
-    QG_span.value.textContent = QG_span.value.textContent.slice(0, 17) + " ...";
+    QG_span.value.textContent = QG_span.value.textContent.slice(0, 17) + ' ...'
   }
-};
+}
+
+const local_page_maker = () => {
+  click++
+  localStorage.setItem(`command_${click}`, JSON.stringify({ content: 'test' }))
+}
 
 const localStorageAnalysis = () => {
-  const keys = Object.keys(localStorage);
+  const keys = Object.keys(localStorage)
 
-  const commandKeys = keys.filter((key) => key.startsWith("command_"));
+  const commandKeys = keys.filter((key) => key.startsWith('command_'))
 
-  console.log(`Nombre de commandes trouvées : ${commandKeys.length}`);
+  console.log(`Nombre de commandes trouvées : ${commandKeys.length}`)
 
-  const menuContainer = document.querySelector(".menu_third_part");
+  const menuContainer = document.querySelector('.menu_third_part')
 
   commandKeys.forEach((key, index) => {
-    const commandData = JSON.parse(localStorage.getItem(key));
-    const commandDiv = document.createElement("div");
-    const span = document.createElement("span");
-    const img = document.createElement("img");
+    const commandData = JSON.parse(localStorage.getItem(key))
+    const commandDiv = document.createElement('div')
+    const span = document.createElement('span')
+    const img = document.createElement('img')
 
-    img.src = "/src/assets/svg/stripe-icon.svg";
+    img.src = '/src/assets/svg/stripe-icon.svg'
 
-    commandDiv.className = "pages";
-    commandDiv.setAttribute("ref", "local_page_content")
-    span.innerHTML = `${commandData[0].content || `Page n°${index + 1} `}`;
+    commandDiv.className = 'pages'
+    commandDiv.setAttribute('ref', 'local_page_content')
+    span.innerHTML = `${commandData[0].content || `Page n°${index + 1} `}`
 
-    commandDiv.appendChild((img))
-    commandDiv.appendChild(span);
-    menuContainer?.appendChild(commandDiv);
-  });
-};
+    commandDiv.addEventListener('click', () => {
+      console.log(index + 1)
+      console.log((page_local.page_no = index + 1))
+      console.log(page_local.page_no)
+    })
+
+    commandDiv.appendChild(img)
+    commandDiv.appendChild(span)
+    menuContainer?.appendChild(commandDiv)
+  })
+}
 
 onMounted(() => {
-  localStorageAnalysis();
-  trimSpan();
-});
+  localStorageAnalysis()
+  trimSpan()
+})
 </script>
 
 <style scoped>
@@ -145,10 +163,10 @@ button {
 }
 
 .third_part_span {
-  padding: 8px ;
-  color: #9B9B9B;
+  padding: 8px;
+  color: #9b9b9b;
   font-size: 12px;
-  font-family: "SF Pro Regular";
+  font-family: 'SF Pro Regular';
   width: 100%;
 }
 
@@ -171,17 +189,17 @@ button {
 
 .QG_span {
   font-size: 14px;
-  font-family: "SF Pro Medium";
+  font-family: 'SF Pro Medium';
   color: var(--white-50);
 }
 
 input {
   padding-left: 5px;
-  font-family: "SF Pro Regular";
-  color: #9B9B9B;
+  font-family: 'SF Pro Regular';
+  color: #9b9b9b;
   background-color: transparent;
   border: none;
-  width: 100%
+  width: 100%;
 }
 
 input:focus {
@@ -189,7 +207,7 @@ input:focus {
 }
 
 input::placeholder {
-  color: #9B9B9B;
+  color: #9b9b9b;
   font-size: 14px;
 }
 </style>

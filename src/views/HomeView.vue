@@ -1,20 +1,22 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import MarkdownCommand from '../components/markdown_command/MarkdownCommand.vue'
 import Menu from '../components/menu_component/Menu.vue'
 import { useInputStore } from '@/stores/useInputStore'
+import { pageSelected } from '@/stores/menu/page_selected'
 
 const markdownCommands = ref<{ id: number; content: string }[]>([]) // Tableau des commandes
 const activeMarkdown = ref<number | null>(null) // Commande active
 const inputStore = useInputStore()
+const page_local = pageSelected()
 
 const saveCommandsInLocalStorage = () => {
-  localStorage.setItem('command_1', JSON.stringify(markdownCommands.value))
+  localStorage.setItem(`command_${page_local.page_no}`, JSON.stringify(markdownCommands.value))
   console.log('Commandes sauvegardées dans localStorage :', markdownCommands.value)
 }
 
 const loadCommandsFromLocalStorage = () => {
-  const savedCommands = localStorage.getItem('command_1')
+  const savedCommands = localStorage.getItem(`command_${page_local.page_no}`)
   if (savedCommands) {
     markdownCommands.value = JSON.parse(savedCommands)
     console.log('Commandes chargées depuis localStorage :', markdownCommands.value)
@@ -56,7 +58,7 @@ const handleKeydown = (event: KeyboardEvent) => {
   ) {
     if (activeMarkdown.value !== null) {
       deleteMarkdownCommand(activeMarkdown.value)
-      activeMarkdown.value = null // Réinitialise la commande active
+      activeMarkdown.value = null
     }
   }
 }
@@ -65,18 +67,25 @@ const selectCommand = (commandId: number) => {
   activeMarkdown.value = commandId
   const command = markdownCommands.value.find((c) => c.id === commandId)
   if (command) {
-    inputStore.inputValue = command.content // Charge le contenu de la commande sélectionnée
+    inputStore.inputValue = command.content
     console.log('Commande sélectionnée :', command)
   }
 }
 
-// Chargement des commandes au montage du composant
 onMounted(() => {
   loadCommandsFromLocalStorage()
   if (markdownCommands.value.length === 0) {
-    addMarkdownCommand() // Ajoute une commande vide si aucune n'existe
+    addMarkdownCommand()
   }
 })
+
+watch(
+  () => page_local.page_no,
+  () => {
+    loadCommandsFromLocalStorage()
+    console.log('Page changée, commandes rechargées pour la page', page_local.page_no)
+  },
+)
 </script>
 
 <template>
@@ -87,7 +96,10 @@ onMounted(() => {
       :class="{ active: command.id === activeMarkdown }"
       @click="selectCommand(command.id)"
     >
-      <MarkdownCommand :input="command.content" @input="updateActiveCommand(command.id, $event.target.value)" />
+      <MarkdownCommand
+        :input="command.content"
+        @input="updateActiveCommand(command.id, $event.target.value)"
+      />
     </div>
     <Menu />
   </main>
