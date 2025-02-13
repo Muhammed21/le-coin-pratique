@@ -42,7 +42,6 @@ export default {
   position: relative;
   cursor: pointer;
   display: flex;
-  width: 640px;
   height: max-content;
   align-items: center;
   justify-content: space-between;

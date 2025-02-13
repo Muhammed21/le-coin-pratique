@@ -99,7 +99,24 @@ li {
   justify-content: start;
 }
 
-.pages:hover {
+.pages:hover span {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: all 200ms ease-in-out;
+}
+
+.pages.active {
   background-color: var(--white-05);
   transition: all 200ms ease-in-out;
+}
+
+@media (max-width: 1200px) {
+  .pages {
+    padding: 5px;
+    background-color: var(--white-05);
+  }
+  .pages.active {
+    border: 1px solid #5167EC;
+    background-color: rgba(81,103,236, 0.2);
+  }
 }
